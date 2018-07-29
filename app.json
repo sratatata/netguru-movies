@@ -1,15 +1,9 @@
 {
-  "name": "Movies db",
-  "description": "ASimple movies reviews db",
+  "name": "sratatata-movies",
+  "description": "A simple movies reviews db",
   "image": "heroku/python",
   "repository": "https://github.com/sratatata/netguru-movies",
   "keywords": ["python", "django" ],
-  "env": {
-    "SECRET_KEY": {
-      "description": "The secret key for the Django application.",
-      "generator": "secret"
-    }
-  },
   "environments": {
     "test": {
       "scripts": {
