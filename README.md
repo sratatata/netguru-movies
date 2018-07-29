@@ -26,3 +26,56 @@ We’d like you to build simple REST API for us - a basic movie database interac
 * At least basic tests of endpoints and their functionality are obligatory. Their exact scope and form is left up to you.
 * The application's code should be kept in a public repository so that we can read it, pull it and build it ourselves. Remember to include README file or at least basic notes on application requirements and setup - we should be able to easily and quickly get it running.
 * Written application must be hosted and publicly available for us online - we recommend Heroku.
+
+## About 
+As mentioned in assigment section above application provides simple rest api for issuing comments/reviews
+of movies from external database. 
+
+Solution is based on django-rest framework which is extending django capabilities with many 
+rest friendly modules. For more information check project [website](http://www.django-rest-framework.org/). 
+
+Note:
+- For sake of simplicity and due to non production character of this application, 
+debug mode in django is not diabled on production environment. 
+
+### For the reviewer
+- For your convenience I left source branches for pull requests without squash so you can check 
+what problems I was struggling with. 
+
+## Setup 
+
+### New setup
+As it was requested application is prepared to use with heroku services. 
+
+1. Follow [heroku](https://devcenter.heroku.com/articles/getting-started-with-python) manual to setup your account 
+2. Create new application as it's descirbed in [manual](https://devcenter.heroku.com/articles/getting-started-with-python)
+3. Deploy application: 
+    ```bash
+    $> git push heroku master 
+    ```
+4. Run migration scripts: 
+    ```bash
+    $> heroku run python manage.py migrate
+    ```
+5. Now you can visit deployed application
+    ```bash
+    $> heroku open
+    ```
+    
+Note:
+- postgresDb would be added automatically, if not add it manually 
+
+### Existing setup
+Apllication is already configured to deploy to domain: `sratatata-movies.herokuapp.com`
+automatically after push to `master` branch so you can visit it on mentioned url. 
+
+If changes needed just issue pull request to master branch, after changes accepted, they would 
+go live after passing tests. 
+
+## Usage
+
+
+- To get description of available methods please refer main page with interactive [api-browser](https://sratatata-movies.herokuapp.com/). 
+    ```
+    https://sratatata-movies.herokuapp.com/
+    ```
