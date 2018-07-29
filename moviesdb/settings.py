@@ -25,7 +25,7 @@ SECRET_KEY = '^l5)_jqh&r9bw%d9t1#=1-(%i*zbvntoukh--n$9zbb_c^@evj'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['.herokuapp.com']
 
 
 # Application definition
@@ -118,5 +118,9 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
-
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Configure Django App for Heroku.
+import django_heroku
+django_heroku.settings(locals())
