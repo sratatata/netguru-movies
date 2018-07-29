@@ -46,3 +46,8 @@ class MovieAPITest(TestCase):
         self.assertTrue(serializer.is_valid())
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_invalid_body_when_adding_new_movie(self):
+        response = client.post(reverse('movie-list'), data={'invalid':'field'}, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
