@@ -1,0 +1,15 @@
+{
+  "name": "sratatata-movies",
+  "description": "A simple movies reviews db",
+  "image": "heroku/python",
+  "repository": "https://github.com/sratatata/netguru-movies",
+  "keywords": ["python", "django" ],
+  "environments": {
+    "test": {
+      "scripts": {
+        "test-setup": "python manage.py collectstatic --noinput",
+        "test": "python manage.py test"
+      }
+    }
+  }
+}
