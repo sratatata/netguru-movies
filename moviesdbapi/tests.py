@@ -28,3 +28,9 @@ class MovieAPITest(TestCase):
     def test_get_200(self):
         response = client.get(reverse('movie-list'))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    # def test_add_new_movie(self):
+    #     data = None
+    #     response = client.post(reverse('movie-create'), data)
+    #
+    #     self.assert
