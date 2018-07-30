@@ -29,7 +29,8 @@ DEBUG = True
 # See http://www.omdbapi.com/apikey.aspx
 OMDB_SECRET = os.environ.get('OMDB_SECRET')
 
-ALLOWED_HOSTS = ['.herokuapp.com']
+ALLOWED_HOSTS = ['127.0.0.1',
+                 '.herokuapp.com']
 
 
 # Application definition
