@@ -94,8 +94,56 @@ Api key could be obtained here on [omdb website](http://www.omdbapi.com/apikey.a
 
 ## Usage
 
+### Listing movies:
+```
+# using httpie
+$> http GET https://sratatata-movies.herokuapp.com/movies/
+```
+Example output: 
+```
+HTTP/1.1 200 OK
+Allow: GET, POST, HEAD, OPTIONS
+Connection: keep-alive
+Content-Length: 105
+Content-Type: application/json
+Date: Mon, 30 Jul 2018 21:21:02 GMT
+Server: gunicorn/19.9.0
+Vary: Accept, Cookie
+Via: 1.1 vegur
+X-Frame-Options: SAMEORIGIN
 
-- To get description of available methods please refer main page with interactive [api-browser](https://sratatata-movies.herokuapp.com/). 
-    ```
-    https://sratatata-movies.herokuapp.com/
-    ```
+[
+    {
+        "title": "Inception", 
+        "year": "2010"
+    }, 
+    {
+        "title": "Matrix", 
+        "year": "1993–"
+    }
+]
+```
+
+### Posting movies:
+```
+# using httpie
+$> http POST https://sratatata-movies.herokuapp.com/movies/ title="Psy"
+```
+Json body:
+```
+   { "title":"Psy" }
+```
+
+Example output: 
+
+```
+HTTP 201 Created
+Allow: GET, POST, HEAD, OPTIONS
+Content-Type: application/json
+Vary: Accept
+
+{
+    "title": "Psy",
+    "year": "1989"
+}
+```
