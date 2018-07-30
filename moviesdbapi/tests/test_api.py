@@ -9,6 +9,7 @@ from moviesdbapi.models import Movie
 from moviesdbapi.serializers import MovieSerializer
 
 EXISTING_MOVIE_TITLE = 'Inception'
+ANOTHER_EXISTING_MOVIE_TITLE = 'Titanic'
 NOT_EXISTING_MOVIE_TITLE = 'Live of Wojtek from Samsung'
 
 client = APIClient()
@@ -16,9 +17,19 @@ client = APIClient()
 
 class MovieAPITest(TestCase):
     @tag('slow')
-    def test_get_200(self):
+    def test_get_empty_movie_list(self):
         response = client.get(reverse('movie-list'))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertListEqual(response.data, [])
+
+    @tag('slow')
+    def test_list_two_movies_after_adding_two_movies(self):
+        client.post(reverse('movie-list'), data={'title': EXISTING_MOVIE_TITLE}, format='json')
+        client.post(reverse('movie-list'), data={'title': ANOTHER_EXISTING_MOVIE_TITLE}, format='json')
+
+        response = client.get(reverse('movie-list'))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
 
     @tag('slow')
     def test_add_new_movie(self):
