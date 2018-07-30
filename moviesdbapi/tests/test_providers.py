@@ -3,7 +3,7 @@ from django.test import TestCase, tag
 from moviesdb import settings
 from moviesdbapi.providers import OMDBMoviesProvider
 
-EXPECTED_YEAR = 1997
+EXPECTED_YEAR = "1997"
 EXPECTED_TITLE = "Titanic"
 NOT_EXISTING_MOVIE_TITLE = 'Live of Wojtek from Samsung'
 

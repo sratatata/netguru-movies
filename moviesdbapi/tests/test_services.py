@@ -4,7 +4,7 @@ from mock import Mock
 from moviesdbapi.models import Movie
 from moviesdbapi.services import MoviesProvider, MoviesCatalogueService
 
-EXPECTED_YEAR = 1997
+EXPECTED_YEAR = "1997"
 EXPECTED_TITLE = "Titanic"
 
 

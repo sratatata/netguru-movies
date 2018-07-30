@@ -60,7 +60,7 @@ class OMDBMoviesProvider(MoviesProvider):
         try:
             movie = Movie()
             movie.title = json["Title"]
-            movie.year = int(json["Year"])
+            movie.year = json["Year"]
             return [movie]
         except KeyError:
             return None
