@@ -72,6 +72,26 @@ automatically after push to `master` branch so you can visit it on mentioned url
 If changes needed just issue pull request to master branch, after changes accepted, they would 
 go live after passing tests. 
 
+### Additional Configuration
+
+#### OMDB Database
+See [www.omdbapi.com](http://www.omdbapi.com) for more details
+
+By default `settings.py` is looking for environment variable OMDB_SECRET with OMDB api-key set.
+Please set mentioned variable: 
+```
+set OMDB_SECRET=<your_api_key>
+``` 
+or insert it into `settings.py` directly.
+```
+# Custom secret necessary to access to OMDB database
+# See http://www.omdbapi.com/apikey.aspx
+# OMDB_SECRET = os.environ.get('OMDB_SECRET')
+OMDB_SECRET = <your_api_key>
+```
+
+Api key could be obtained here on [omdb website](http://www.omdbapi.com/apikey.aspx)
+
 ## Usage
 
 
