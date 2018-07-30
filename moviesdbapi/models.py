@@ -8,6 +8,7 @@ class Movie(models.Model):
     """
 
     title = models.CharField(max_length=255)
+    year = models.SmallIntegerField(null=True, blank=True)
 
     def __repr__(self):
-        return f'Movie: {self.title}'
+        return f'Movie: {self.title} from {self.year}'

@@ -25,6 +25,10 @@ SECRET_KEY = '^l5)_jqh&r9bw%d9t1#=1-(%i*zbvntoukh--n$9zbb_c^@evj'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# Custom secret necessary to access to OMDB database
+# See http://www.omdbapi.com/apikey.aspx
+OMDB_SECRET = os.environ.get('OMDB_SECRET')
+
 ALLOWED_HOSTS = ['.herokuapp.com']
 
 
