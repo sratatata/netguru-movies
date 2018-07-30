@@ -8,13 +8,13 @@ from rest_framework.test import APIClient
 from moviesdbapi.models import Movie
 from moviesdbapi.serializers import MovieSerializer
 
+EXISTING_MOVIE_TITLE = 'Inception'
+NOT_EXISTING_MOVIE_TITLE = 'Live of Wojtek from Samsung'
+
 client = APIClient()
 
 
 class MovieAPITest(TestCase):
-    def setUp(self):
-        Movie.objects.create(title='Titanic')
-
     @tag('slow')
     def test_get_200(self):
         response = client.get(reverse('movie-list'))
@@ -22,14 +22,14 @@ class MovieAPITest(TestCase):
 
     @tag('slow')
     def test_add_new_movie(self):
-        response = client.post(reverse('movie-list'), data={'title': 'Inception'}, format='json')
+        response = client.post(reverse('movie-list'), data={'title': EXISTING_MOVIE_TITLE}, format='json')
 
         movies = Movie.objects.all()
-        inception = movies.get(title='Inception')
+        inception = movies.get(title=EXISTING_MOVIE_TITLE)
 
         # new movie added
-        self.assertEqual(movies.count(), 2)
-        self.assertEqual(inception.title, 'Inception')
+        self.assertEqual(movies.count(), 1)
+        self.assertEqual(inception.title, EXISTING_MOVIE_TITLE)
 
         # response object is valid
         serializer = MovieSerializer(data=response.data)
@@ -44,16 +44,21 @@ class MovieAPITest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     @tag('slow')
-    @skip
     def test_new_movie_is_fetched_from_external_api(self):
-        response = client.post(reverse('movie-list'), data={'title': 'Inception'}, format='json')
-
+        response = client.post(reverse('movie-list'), data={'title': EXISTING_MOVIE_TITLE}, format='json')
         serializer = MovieSerializer(data=response.data)
+
         self.assertTrue(serializer.is_valid())
-        self.assertEqual(serializer.data.year, 2010)
 
         inception = Movie.objects.get(title='Inception')
         serializer2 = MovieSerializer(inception)
         self.assertEqual(response.data, serializer2.data)
+
+    @tag('slow')
+    def test_not_existing_movie_is_not_fetched_from_external_api(self):
+        response = client.post(reverse('movie-list'), data={'title': NOT_EXISTING_MOVIE_TITLE}, format='json')
+        serializer = MovieSerializer(data=response.data)
+
+        self.assertFalse(serializer.is_valid())
 
 
