@@ -1,5 +1,5 @@
 from django.core.exceptions import FieldError
-from django.db.models import QuerySet
+from django.db.models import QuerySet, F
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -24,7 +24,8 @@ class MovieList(APIView):
     def get(self, request, format=None):
         movies = Movie.objects.all()
 
-        movies = generic_filter_by_query_parameters(movies, request)
+        movies = generic_filter_by_query_parameters(movies, request, ignored=['sort_by', 'order'])
+        movies = generic_sort(movies, request)
 
         serializer = MovieSerializer(movies, many=True)
         return Response(serializer.data)
@@ -54,7 +55,7 @@ class CommentList(APIView):
 
     def get(self, request, format=None):
         comments = Comment.objects.all()
-        filter_by_movie_id = self.request.query_params.get('movie', None)
+        filter_by_movie_id = request.query_params.get('movie', None)
         if filter_by_movie_id:
             comments = comments.filter(movie=filter_by_movie_id)
         serializer = CommentSerializer(comments, many=True)
@@ -69,7 +70,7 @@ class CommentList(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-def generic_filter_by_query_parameters(queryset: QuerySet, request) -> QuerySet:
+def generic_filter_by_query_parameters(queryset: QuerySet, request, ignored=None) -> QuerySet:
     """
     Copy all query parameters from request and paste it into QuerySet.filter method.
 
@@ -79,6 +80,7 @@ def generic_filter_by_query_parameters(queryset: QuerySet, request) -> QuerySet:
     In case of any parameter is not a proper model field, it would ignore filtering
     and result with original queryset
 
+    :param ignored: list of ignored parameters (ex. sort_by)
     :param queryset: QuerySet to be filtered
     :param request: request from GET http request
     :return: new query set with filtered values
@@ -86,6 +88,8 @@ def generic_filter_by_query_parameters(queryset: QuerySet, request) -> QuerySet:
 
     filtering_arguments = {}
     for parameter in request.query_params:
+        if parameter in ignored:
+            continue
         parameter_value = request.query_params.get(parameter, None)
         if parameter_value.isdigit():
             filtering_arguments[parameter] = parameter_value
@@ -97,3 +101,31 @@ def generic_filter_by_query_parameters(queryset: QuerySet, request) -> QuerySet:
         return queryset
     except FieldError:
         return queryset
+
+
+def generic_sort(query_set: QuerySet, request):
+    """
+    Sorts by field given in request query parameter `sort_by`
+    with order given as `order`.
+    In case of missing order default order is asc.
+    When `sort_by` contains not existing field, sorting is ignored and
+    original query_set is returned
+
+    :param query_set: QuerySet to be sorted
+    :param request: GET request
+    :return: sorted query_set
+    """
+    sort_by = request.query_params.get('sort_by', None)
+    order = request.query_params.get('order', None)
+    model = query_set.model
+    try:
+        if sort_by and hasattr(model, sort_by) and order in ['desc', 'asc']:
+            if order == "desc":
+                condition = F(sort_by).desc()
+            else:
+                condition = F(sort_by).asc()
+            return query_set.order_by(condition)
+        else:
+            return query_set
+    except FieldError:
+        return query_set
