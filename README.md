@@ -97,7 +97,7 @@ Api key could be obtained here on [omdb website](http://www.omdbapi.com/apikey.a
 ### Listing movies:
 ```
 # using httpie
-$> http GET https://sratatata-movies.herokuapp.com/movies/
+$> http GET https://sratatata-movies.herokuapp.com/movies
 ```
 Example output: 
 ```
@@ -130,7 +130,7 @@ Statuses:
 ### Posting movies:
 ```
 # using httpie
-$> http POST https://sratatata-movies.herokuapp.com/movies/ title="Psy"
+$> http POST https://sratatata-movies.herokuapp.com/movies title="Psy"
 ```
 Json body:
 ```
@@ -158,7 +158,7 @@ Statuses
 ### Listing comments:
 ```
 # using httpie
-$> http GET https://sratatata-movies.herokuapp.com/comments/
+$> http GET https://sratatata-movies.herokuapp.com/comments
 ```
 
 Query Parameters:
@@ -195,7 +195,7 @@ Statuses:
 ### Posting comments:
 ```
 # using httpie
-$> http POST https://sratatata-movies.herokuapp.com/comments/ movie=4 body="Amazing!"
+$> http POST https://sratatata-movies.herokuapp.com/comments movie=4 body="Amazing!"
 ```
 
 Json body:
