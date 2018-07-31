@@ -89,6 +89,8 @@ class CommentsAPITest(TestCase):
     Should fetch list of all comments present in application database.
     Should allow filtering comments by associated movie, by passing its ID.
     """
+
+    @tag('slow')
     def test_adding_new_comment(self):
         client.post(reverse('movie-list'), data={'title': EXISTING_MOVIE_TITLE}, format='json')
         response = client.post(reverse('comment-list'),
@@ -99,6 +101,7 @@ class CommentsAPITest(TestCase):
         self.assertEquals(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(serializer.is_valid())
 
+    @tag('slow')
     def test_adding_new_comment_to_non_existing_movie(self):
         response = client.post(reverse('comment-list'),
                                data={'movie': NOT_EXISTING_MOVIE_ID, 'body': EXAMPLE_COMMENT_BODY})
@@ -108,12 +111,14 @@ class CommentsAPITest(TestCase):
         self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertFalse(serializer.is_valid())
 
+    @tag('slow')
     def test_adding_new_comment_with_empty_body(self):
         response = client.post(reverse('comment-list'),
                                data={'movie': EXISTING_MOVIE_ID, 'body': EMPTY_BODY})
 
         self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    @tag('slow')
     def test_fetch_empty_comments_list(self):
         response = client.get(reverse('comment-list'))
 
@@ -123,7 +128,7 @@ class CommentsAPITest(TestCase):
     @tag('slow')
     def test_list_two_comments_after_adding_two_comments(self):
         client.post(reverse('movie-list'), data={'title': EXISTING_MOVIE_TITLE}, format='json')
-        
+
         client.post(reverse('comment-list'), data={'movie': EXISTING_MOVIE_ID, 'body': EXAMPLE_COMMENT_BODY})
         client.post(reverse('comment-list'), data={'movie': EXISTING_MOVIE_ID, 'body': EXAMPLE_COMMENT_BODY})
 
