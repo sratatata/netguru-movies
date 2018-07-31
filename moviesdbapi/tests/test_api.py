@@ -84,6 +84,37 @@ class MovieAPITest(TestCase):
         self.assertEquals(len(response.data), 2)
 
     @tag('slow')
+    def test_asc_sort_by_title(self):
+        client.post(reverse('movie-list'), data={'title': EXISTING_MOVIE_TITLE}, format='json')
+        client.post(reverse('movie-list'), data={'title': ANOTHER_EXISTING_MOVIE_TITLE}, format='json')
+
+        response = client.get(reverse('movie-list'), data={'sort_by': 'title'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEquals(len(response.data), 2)
+        self.assertEquals(response.data[0]['title'], EXISTING_MOVIE_TITLE)
+        self.assertEquals(response.data[1]['title'], ANOTHER_EXISTING_MOVIE_TITLE)
+
+    @tag('slow')
+    def test_desc_sort_by_title(self):
+        client.post(reverse('movie-list'), data={'title': EXISTING_MOVIE_TITLE}, format='json')
+        client.post(reverse('movie-list'), data={'title': ANOTHER_EXISTING_MOVIE_TITLE}, format='json')
+
+        response = client.get(reverse('movie-list'), data={'sort_by': 'title', 'order': 'desc'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEquals(len(response.data), 2)
+        self.assertEquals(response.data[0]['title'], ANOTHER_EXISTING_MOVIE_TITLE)
+        self.assertEquals(response.data[1]['title'], EXISTING_MOVIE_TITLE)
+
+    @tag('slow')
+    def test_sort_by_invalid_field_is_ignored(self):
+        client.post(reverse('movie-list'), data={'title': EXISTING_MOVIE_TITLE}, format='json')
+        client.post(reverse('movie-list'), data={'title': ANOTHER_EXISTING_MOVIE_TITLE}, format='json')
+
+        response = client.get(reverse('movie-list'), data={'sort_by': 'bar', 'order': 'desc'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEquals(len(response.data), 2)
+
+    @tag('slow')
     def test_add_new_movie(self):
         response = client.post(reverse('movie-list'), data={'title': EXISTING_MOVIE_TITLE}, format='json')
 
