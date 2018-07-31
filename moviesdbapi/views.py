@@ -32,7 +32,7 @@ class MovieList(APIView):
             # Serialize and later serialize to make sure that
             # movie is in proper format. I rather like this than returning dict from service
             json = MovieSerializer(movie).data  # TODO remove this hack if enough time
-            serializer = MovieSerializer(data=json)
+            serializer = MovieSerializer(data=json) # TODO remove this hack if enough time
 
             if serializer.is_valid():
                 serializer.save()
@@ -49,7 +49,11 @@ class CommentList(APIView):
 
     def get(self, request, format=None):
         comments = Comment.objects.all()
+        filter_by_movie_id = self.request.query_params.get('movie', None)
+        if filter_by_movie_id:
+            comments = comments.filter(movie=filter_by_movie_id)
         serializer = CommentSerializer(comments, many=True)
+
         return Response(serializer.data)
 
     def post(self, request, format=None):

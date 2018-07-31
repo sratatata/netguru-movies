@@ -14,7 +14,7 @@ EXISTING_MOVIE_TITLE = 'Inception'
 ANOTHER_EXISTING_MOVIE_TITLE = 'Titanic'
 NOT_EXISTING_MOVIE_TITLE = 'Live of Wojtek from Samsung'
 
-EXISTING_MOVIE_ID = 1
+ANY_MOVIE_ID = 1
 NOT_EXISTING_MOVIE_ID = 999
 EXAMPLE_COMMENT_BODY = "Save the 418!"
 
@@ -92,9 +92,9 @@ class CommentsAPITest(TestCase):
 
     @tag('slow')
     def test_adding_new_comment(self):
-        client.post(reverse('movie-list'), data={'title': EXISTING_MOVIE_TITLE}, format='json')
+        movie_response = client.post(reverse('movie-list'), data={'title': EXISTING_MOVIE_TITLE}, format='json')
         response = client.post(reverse('comment-list'),
-                               data={'movie': EXISTING_MOVIE_ID, 'body': EXAMPLE_COMMENT_BODY})
+                               data={'movie': movie_response.data['id'], 'body': EXAMPLE_COMMENT_BODY})
 
         serializer = CommentSerializer(data=response.data)
 
@@ -114,7 +114,7 @@ class CommentsAPITest(TestCase):
     @tag('slow')
     def test_adding_new_comment_with_empty_body(self):
         response = client.post(reverse('comment-list'),
-                               data={'movie': EXISTING_MOVIE_ID, 'body': EMPTY_BODY})
+                               data={'movie': ANY_MOVIE_ID, 'body': EMPTY_BODY})
 
         self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -127,11 +127,46 @@ class CommentsAPITest(TestCase):
 
     @tag('slow')
     def test_list_two_comments_after_adding_two_comments(self):
-        client.post(reverse('movie-list'), data={'title': EXISTING_MOVIE_TITLE}, format='json')
+        response = client.post(reverse('movie-list'), data={'title': EXISTING_MOVIE_TITLE}, format='json')
 
-        client.post(reverse('comment-list'), data={'movie': EXISTING_MOVIE_ID, 'body': EXAMPLE_COMMENT_BODY})
-        client.post(reverse('comment-list'), data={'movie': EXISTING_MOVIE_ID, 'body': EXAMPLE_COMMENT_BODY})
+        client.post(reverse('comment-list'), data={'movie': response.data['id'], 'body': EXAMPLE_COMMENT_BODY})
+        client.post(reverse('comment-list'), data={'movie': response.data['id'], 'body': EXAMPLE_COMMENT_BODY})
 
         response = client.get(reverse('comment-list'))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 2)
+
+    @tag('slow')
+    def test_filter_list_of_comments_by_movie_id(self):
+        response_1 = client.post(reverse('movie-list'), data={'title': EXISTING_MOVIE_TITLE}, format='json')
+        response_2 = client.post(reverse('movie-list'), data={'title': ANOTHER_EXISTING_MOVIE_TITLE}, format='json')
+
+        client.post(reverse('comment-list'), data={'movie': response_1.data['id'], 'body': EXAMPLE_COMMENT_BODY})
+        client.post(reverse('comment-list'), data={'movie': response_2.data['id'], 'body': EXAMPLE_COMMENT_BODY})
+
+        response = client.get(reverse('comment-list'), data={'movie': response_1.data['id']})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
+    @tag('slow')
+    def test_filter_list_of_comments_by_not_existing_movie_id(self):
+        response_1 = client.post(reverse('movie-list'), data={'title': EXISTING_MOVIE_TITLE}, format='json')
+        response_2 = client.post(reverse('movie-list'), data={'title': ANOTHER_EXISTING_MOVIE_TITLE}, format='json')
+
+        client.post(reverse('comment-list'), data={'movie': response_1.data['id'], 'body': EXAMPLE_COMMENT_BODY})
+        client.post(reverse('comment-list'), data={'movie': response_2.data['id'], 'body': EXAMPLE_COMMENT_BODY})
+
+        response = client.get(reverse('comment-list'), data={'movie': NOT_EXISTING_MOVIE_ID})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 0)
+
+    @tag('slow')
+    def test_filter_list_of_comments_by_empty_movie_id(self):
+        response_1 = client.post(reverse('movie-list'), data={'title': EXISTING_MOVIE_TITLE}, format='json')
+        response_2 = client.post(reverse('movie-list'), data={'title': ANOTHER_EXISTING_MOVIE_TITLE}, format='json')
+
+        client.post(reverse('comment-list'), data={'movie': response_1.data['id'], 'body': EXAMPLE_COMMENT_BODY})
+        client.post(reverse('comment-list'), data={'movie': response_2.data['id'], 'body': EXAMPLE_COMMENT_BODY})
+
+        response = client.get(reverse('comment-list'), data={'movie': ""})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)

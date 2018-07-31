@@ -160,6 +160,14 @@ Statuses
 # using httpie
 $> http GET https://sratatata-movies.herokuapp.com/comments/
 ```
+
+Query Parameters:
+* (optional) movie:int - enable comment filtering by movie id
+
+> Please note that filtering is enabled by query parameter because requested 
+> in the assignment resource url is not nested (`GET: /comments`).  
+> Alternately could be done `GET: /movies/<id:int>/comments`
+
 Example output: 
 ```
 HTTP 200 OK
