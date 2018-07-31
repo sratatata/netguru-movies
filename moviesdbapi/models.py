@@ -25,3 +25,6 @@ class Comment(models.Model):
 
     body = models.CharField(max_length=255)
     movie = models.ForeignKey(Movie, related_name='movie', on_delete=models.CASCADE)
+
+    def __repr__(self):
+        return f'Comment to {self.movie.title}: {self.body}'
