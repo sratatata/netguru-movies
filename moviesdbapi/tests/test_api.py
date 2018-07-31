@@ -11,6 +11,7 @@ from moviesdbapi.serializers import MovieSerializer, CommentSerializer
 EMPTY_BODY = ""
 
 EXISTING_MOVIE_TITLE = 'Inception'
+EXISTING_MOVIE_YEAR = 2010
 ANOTHER_EXISTING_MOVIE_TITLE = 'Titanic'
 NOT_EXISTING_MOVIE_TITLE = 'Live of Wojtek from Samsung'
 
@@ -36,6 +37,51 @@ class MovieAPITest(TestCase):
         response = client.get(reverse('movie-list'))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 2)
+
+    @tag('slow')
+    def test_list_filtered_movie_by_title(self):
+        client.post(reverse('movie-list'), data={'title': EXISTING_MOVIE_TITLE}, format='json')
+        client.post(reverse('movie-list'), data={'title': ANOTHER_EXISTING_MOVIE_TITLE}, format='json')
+
+        response = client.get(reverse('movie-list'), data={'title': EXISTING_MOVIE_TITLE})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
+    @tag('slow')
+    def test_list_filtered_movie_by_year(self):
+        client.post(reverse('movie-list'), data={'title': EXISTING_MOVIE_TITLE}, format='json')
+        client.post(reverse('movie-list'), data={'title': ANOTHER_EXISTING_MOVIE_TITLE}, format='json')
+
+        response = client.get(reverse('movie-list'), data={'year': EXISTING_MOVIE_YEAR})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
+    @tag('slow')
+    def test_list_filtered_movie_by_year_and_title(self):
+        client.post(reverse('movie-list'), data={'title': EXISTING_MOVIE_TITLE}, format='json')
+        client.post(reverse('movie-list'), data={'title': ANOTHER_EXISTING_MOVIE_TITLE}, format='json')
+
+        response = client.get(reverse('movie-list'), data={'title': EXISTING_MOVIE_TITLE, 'year': EXISTING_MOVIE_YEAR})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
+    @tag('slow')
+    def test_list_filtered_movie_found_none(self):
+        client.post(reverse('movie-list'), data={'title': EXISTING_MOVIE_TITLE}, format='json')
+        client.post(reverse('movie-list'), data={'title': ANOTHER_EXISTING_MOVIE_TITLE}, format='json')
+
+        response = client.get(reverse('movie-list'), data={'title': NOT_EXISTING_MOVIE_ID})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEquals(len(response.data), 0)
+
+    @tag('slow')
+    def test_list_filtered_movie_by_invalid_field_ignores_filters(self):
+        client.post(reverse('movie-list'), data={'title': EXISTING_MOVIE_TITLE}, format='json')
+        client.post(reverse('movie-list'), data={'title': ANOTHER_EXISTING_MOVIE_TITLE}, format='json')
+
+        response = client.get(reverse('movie-list'), data={'foo': 'bar'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEquals(len(response.data), 2)
 
     @tag('slow')
     def test_add_new_movie(self):
