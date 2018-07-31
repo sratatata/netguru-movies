@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from moviesdbapi.models import Movie
+from moviesdbapi.models import Movie, Comment
 from moviesdbapi.providers import OMDBMoviesProvider
 from moviesdbapi.serializers import MovieSerializer, CommentSerializer
 from moviesdbapi.services import MoviesCatalogueService
@@ -46,6 +46,11 @@ class CommentList(APIView):
     """
     API endpoint that allow posting or viewing comments
     """
+
+    def get(self, request, format=None):
+        comments = Comment.objects.all()
+        serializer = CommentSerializer(comments, many=True)
+        return Response(serializer.data)
 
     def post(self, request, format=None):
         serializer = CommentSerializer(data=request.data)

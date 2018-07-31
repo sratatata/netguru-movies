@@ -119,3 +119,14 @@ class CommentsAPITest(TestCase):
 
         self.assertEquals(response.status_code, status.HTTP_200_OK)
         self.assertListEqual(response.data, [])
+
+    @tag('slow')
+    def test_list_two_comments_after_adding_two_comments(self):
+        client.post(reverse('movie-list'), data={'title': EXISTING_MOVIE_TITLE}, format='json')
+        
+        client.post(reverse('comment-list'), data={'movie': EXISTING_MOVIE_ID, 'body': EXAMPLE_COMMENT_BODY})
+        client.post(reverse('comment-list'), data={'movie': EXISTING_MOVIE_ID, 'body': EXAMPLE_COMMENT_BODY})
+
+        response = client.get(reverse('comment-list'))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
