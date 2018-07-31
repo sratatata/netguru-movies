@@ -99,6 +99,14 @@ Api key could be obtained here on [omdb website](http://www.omdbapi.com/apikey.a
 # using httpie
 $> http GET https://sratatata-movies.herokuapp.com/movies
 ```
+
+Query Parameters:
+* (optional) title:string - filter movies with title `LIKE` value
+* (optional) year:int - filter movies with year exact equal value 
+
+> Please notice that unknown parameters would disable all filtering
+> Filters could be used together
+
 Example output: 
 ```
 HTTP/1.1 200 OK
@@ -120,6 +128,34 @@ X-Frame-Options: SAMEORIGIN
     {
         "title": "Matrix", 
         "year": "1993–"
+    }
+]
+```
+
+Example with filters: 
+```
+# using httpie
+$> http GET https://sratatata-movies.herokuapp.com/movies?year=2010
+```
+
+Outputs:
+
+```
+HTTP/1.1 200 OK
+Allow: GET, POST, HEAD, OPTIONS
+Connection: keep-alive
+Content-Length: 105
+Content-Type: application/json
+Date: Mon, 30 Jul 2018 21:21:02 GMT
+Server: gunicorn/19.9.0
+Vary: Accept, Cookie
+Via: 1.1 vegur
+X-Frame-Options: SAMEORIGIN
+
+[
+    {
+        "title": "Inception", 
+        "year": "2010"
     }
 ]
 ```
