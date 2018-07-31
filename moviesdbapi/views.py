@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 
 from moviesdbapi.models import Movie
 from moviesdbapi.providers import OMDBMoviesProvider
-from moviesdbapi.serializers import MovieSerializer
+from moviesdbapi.serializers import MovieSerializer, CommentSerializer
 from moviesdbapi.services import MoviesCatalogueService
 
 
@@ -40,3 +40,16 @@ class MovieList(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response("Missing title value", status=status.HTTP_400_BAD_REQUEST)
+
+
+class CommentList(APIView):
+    """
+    API endpoint that allow posting or viewing comments
+    """
+
+    def post(self, request, format=None):
+        serializer = CommentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

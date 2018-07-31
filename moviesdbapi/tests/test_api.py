@@ -6,11 +6,17 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from moviesdbapi.models import Movie
-from moviesdbapi.serializers import MovieSerializer
+from moviesdbapi.serializers import MovieSerializer, CommentSerializer
+
+EMPTY_BODY = ""
 
 EXISTING_MOVIE_TITLE = 'Inception'
 ANOTHER_EXISTING_MOVIE_TITLE = 'Titanic'
 NOT_EXISTING_MOVIE_TITLE = 'Live of Wojtek from Samsung'
+
+EXISTING_MOVIE_ID = 1
+NOT_EXISTING_MOVIE_ID = 999
+EXAMPLE_COMMENT_BODY = "Save the 418!"
 
 client = APIClient()
 
@@ -73,3 +79,33 @@ class MovieAPITest(TestCase):
         self.assertFalse(serializer.is_valid())
 
 
+class CommentsAPITest(TestCase):
+    """
+    POST /comments:
+    Request body should contain ID of movie already present in database, and comment text body.
+    Comment should be saved to application database and returned in request response.
+    """
+    def test_adding_new_comment(self):
+        client.post(reverse('movie-list'), data={'title': EXISTING_MOVIE_TITLE}, format='json')
+        response = client.post(reverse('comment-list'),
+                               data={'movie': EXISTING_MOVIE_ID, 'body': EXAMPLE_COMMENT_BODY})
+
+        serializer = CommentSerializer(data=response.data)
+
+        self.assertEquals(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(serializer.is_valid())
+
+    def test_adding_new_comment_to_non_existing_movie(self):
+        response = client.post(reverse('comment-list'),
+                               data={'movie': NOT_EXISTING_MOVIE_ID, 'body': EXAMPLE_COMMENT_BODY})
+
+        serializer = CommentSerializer(data=response.data)
+
+        self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertFalse(serializer.is_valid())
+
+    def test_adding_new_comment_with_empty_body(self):
+        response = client.post(reverse('comment-list'),
+                               data={'movie': EXISTING_MOVIE_ID, 'body': EMPTY_BODY})
+
+        self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
