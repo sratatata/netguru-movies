@@ -84,6 +84,10 @@ class CommentsAPITest(TestCase):
     POST /comments:
     Request body should contain ID of movie already present in database, and comment text body.
     Comment should be saved to application database and returned in request response.
+
+    GET /comments:
+    Should fetch list of all comments present in application database.
+    Should allow filtering comments by associated movie, by passing its ID.
     """
     def test_adding_new_comment(self):
         client.post(reverse('movie-list'), data={'title': EXISTING_MOVIE_TITLE}, format='json')
@@ -109,3 +113,9 @@ class CommentsAPITest(TestCase):
                                data={'movie': EXISTING_MOVIE_ID, 'body': EMPTY_BODY})
 
         self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_fetch_empty_comments_list(self):
+        response = client.get(reverse('comment-list'))
+
+        self.assertEquals(response.status_code, status.HTTP_200_OK)
+        self.assertListEqual(response.data, [])
