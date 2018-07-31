@@ -102,7 +102,9 @@ $> http GET https://sratatata-movies.herokuapp.com/movies
 
 Query Parameters:
 * (optional) title:string - filter movies with title `LIKE` value
-* (optional) year:int - filter movies with year exact equal value 
+* (optional) year:int - filter movies with year exact equal value
+* (optional) sort_by:string - choose single column to generic_sort by (default order is `asc`)
+* (optional) order:string - choose `asc` or  `desc`  
 
 > Please notice that unknown parameters would disable all filtering
 > Filters could be used together
