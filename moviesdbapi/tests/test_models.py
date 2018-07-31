@@ -5,7 +5,7 @@ from moviesdbapi.models import Movie
 
 class MovieModelTest(TestCase):
     """
-    Test class for Movies functional tests
+    Test class for Movies model integration test.
     """
 
     def setUp(self):

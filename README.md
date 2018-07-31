@@ -124,6 +124,9 @@ X-Frame-Options: SAMEORIGIN
 ]
 ```
 
+Statuses:
+* 200 - ok - List of movies was returned
+
 ### Posting movies:
 ```
 # using httpie
@@ -147,3 +150,37 @@ Vary: Accept
     "year": "1989"
 }
 ```
+
+Statuses  
+* 201 - created : movie was successfully added to database 
+* 400 - bad request : title was empty or fetching data from external database was unsuccessful
+
+### Posting comments:
+```
+# using httpie
+$> http POST https://sratatata-movies.herokuapp.com/comments/ movie=4 body="Amazing!"
+```
+
+Json body:
+```
+   { "movie":4, body:"Amazing!" }
+```
+
+Example output
+
+```
+HTTP 201 Created
+Allow: POST, OPTIONS
+Content-Type: application/json
+Vary: Accept
+
+{
+    "id": 2,
+    "movie": 4,
+    "body": "Amazing!"
+}
+```
+
+Statuses  
+* 201 - created : comment was added to database
+* 400 - bad request : movie was not found or comment body was empty
