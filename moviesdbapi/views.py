@@ -1,3 +1,5 @@
+from django.core.exceptions import FieldError
+from django.db.models import QuerySet
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -21,6 +23,9 @@ class MovieList(APIView):
 
     def get(self, request, format=None):
         movies = Movie.objects.all()
+
+        movies = generic_filter_by_query_parameters(movies, request)
+
         serializer = MovieSerializer(movies, many=True)
         return Response(serializer.data)
 
@@ -32,7 +37,7 @@ class MovieList(APIView):
             # Serialize and later serialize to make sure that
             # movie is in proper format. I rather like this than returning dict from service
             json = MovieSerializer(movie).data  # TODO remove this hack if enough time
-            serializer = MovieSerializer(data=json) # TODO remove this hack if enough time
+            serializer = MovieSerializer(data=json)  # TODO remove this hack if enough time
 
             if serializer.is_valid():
                 serializer.save()
@@ -62,3 +67,33 @@ class CommentList(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+def generic_filter_by_query_parameters(queryset: QuerySet, request) -> QuerySet:
+    """
+    Copy all query parameters from request and paste it into QuerySet.filter method.
+
+    * When value of the query parameter could be parsed to digit it's doing exact matching.
+    * Strings are resulting in LIKE matching
+
+    In case of any parameter is not a proper model field, it would ignore filtering
+    and result with original queryset
+
+    :param queryset: QuerySet to be filtered
+    :param request: request from GET http request
+    :return: new query set with filtered values
+    """
+
+    filtering_arguments = {}
+    for parameter in request.query_params:
+        parameter_value = request.query_params.get(parameter, None)
+        if parameter_value.isdigit():
+            filtering_arguments[parameter] = parameter_value
+        else:
+            filtering_arguments[parameter + "__contains"] = parameter_value
+
+    try:
+        queryset = queryset.filter(**filtering_arguments)
+        return queryset
+    except FieldError:
+        return queryset
