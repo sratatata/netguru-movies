@@ -49,7 +49,11 @@ class CommentList(APIView):
 
     def get(self, request, format=None):
         comments = Comment.objects.all()
+        movie = self.request.query_params.get('movie', None)
+        if movie is not None:
+            comments = comments.filter(movie=movie)
         serializer = CommentSerializer(comments, many=True)
+
         return Response(serializer.data)
 
     def post(self, request, format=None):

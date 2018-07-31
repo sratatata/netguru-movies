@@ -147,3 +147,5 @@ class CommentsAPITest(TestCase):
         response = client.get(reverse('comment-list'), data={'movie': response_1.data['id']})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
+
+    
