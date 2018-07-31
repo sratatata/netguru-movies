@@ -155,6 +155,35 @@ Statuses
 * 201 - created : movie was successfully added to database 
 * 400 - bad request : title was empty or fetching data from external database was unsuccessful
 
+### Listing comments:
+```
+# using httpie
+$> http GET https://sratatata-movies.herokuapp.com/comments/
+```
+Example output: 
+```
+HTTP 200 OK
+Allow: GET, POST, HEAD, OPTIONS
+Content-Type: application/json
+Vary: Accept
+
+[
+    {
+        "id": 2,
+        "movie": 4,
+        "body": "Amazing!"
+    },
+    {
+        "id": 3,
+        "movie": 4,
+        "body": "Sink!"
+    }
+]
+```
+
+Statuses:
+* 200 - ok - List of comments was returned
+
 ### Posting comments:
 ```
 # using httpie
